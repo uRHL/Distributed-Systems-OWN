@@ -1,0 +1,13 @@
+Add debugging symbols: 
+    p var /* Print var (also strings, but not other kind of vectors) */
+    b file_name:line_num /* breakpoint */
+    r <args> /* start the execution with args required by myapp*/
+    l /* list */
+    n /* next instruction */
+    c /* continue the execution */
+    bt /* backtrace, to know where you are, what caused the call */
+    t /* go to a specific thread. Useful for multithread applications */
+
+1) add compilation flag -g
+2) gdb -args <arg1 arg2 ...> ./myapp
+3) Type Enter to execute the last command again

@@ -1,0 +1,63 @@
+#define MAXSIZE 256
+
+struct request {
+	char * name; /*name of the process sending the request*/
+	int pos; /*position to operate in the queue*/
+	int val; /*Value to operate with*/
+	int cop; /*Operation code. 1 to init, 0 to destroy, 2 to get, 3 to set*/
+	char q_name[MAXSIZE]; /*queue name*/
+};
+
+CLIENT SIDE
+- init
+	1 CREATE client queue
+	2 OPEN server queue (created in server)
+	3 CREATE message(pid, cop, array_name, val, pos)
+	
+- set
+	* fill up request
+	* send request
+
+- get
+	* fill up request
+	* send request
+- destroy
+	* UNLINK client and server queues
+
+
+void main(){
+	mqd_t mq_server; /* server message queue*/
+	mqd_t q_client; /* client message queue*/
+
+	struct request req;
+	int ans;
+	struct mq_attr attr;
+
+	attr.mq_maxmsg = 1; /*max number of messages*/ 
+	attr.mq_msgsize = sizeof(struct message);
+
+	/*CREATE client queue using library calls*/
+	//modify
+	q_client = mq_open("CLIENT_ONE", O_CREAT|O_RDONLY, 0700, &attr);
+	/*OPEN server queue using library calls*/
+	//modify
+	mq_server = mq_open("ADD_SERVER", O_WRONLY);
+
+	//Fill in the request using library calls
+	//modify to set the structures in the functions get & set
+	req.a = 5;
+	req.b = 2;
+	strcpy(req.name, "CLIENT_ONE");
+
+	//set function
+	mq_send(mq_server, &req, sizeof(struct request), 0);
+	//get function
+	mq_receive(q_client, &res, sizeof(int), 0);
+
+	//destroy function
+	mq_close(mq_server);
+	mq_close(q_client);
+	mq_unlink("CLIENT_ONE");
+
+}
+
